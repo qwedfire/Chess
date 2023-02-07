@@ -1,8 +1,5 @@
 import java.util.HashMap;
-
-//1. 包移動規則
-//2. 紅黑兩隊規則1P 2P
-public class Rule {
+public class Rule{
     public final static HashMap<String, Integer> chessNum = new HashMap<>() {
         {
             put("兵", 0);
@@ -21,8 +18,9 @@ public class Rule {
             put("將", 6);
         }
     }; //判斷數字大小用
-    private final static HashMap<String, Integer> chessRed = new HashMap<>() {
+    public final static HashMap<String, Integer> chessRed = new HashMap<>() {
         {
+            put("O",-1);
             put("兵", 0);
             put("炮", 1);
             put("傌", 2);
@@ -32,8 +30,9 @@ public class Rule {
             put("帥", 6);
         }
     }; //判斷紅棋
-    private final static HashMap<String, Integer> chessBlack = new HashMap<>() {
+    public final static HashMap<String, Integer> chessBlack = new HashMap<>() {
         {
+            put("O",-1);
             put("卒", 0);
             put("包", 1);
             put("馬", 2);

@@ -1,7 +1,10 @@
 import java.awt.*;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class ChessBoard {
+    private boolean blackFirst;
+    private int count;
     private final static int column = 4; //列
     private final static int row = 8; //行
     //所有象棋
@@ -11,7 +14,8 @@ public class ChessBoard {
 
     public enum Action {
         移動,
-        吃;
+        吃,
+        取消;
 
         public static Action getvalues(int index) {
             Action[] actions = Action.values();
@@ -33,9 +37,11 @@ public class ChessBoard {
     }
 
     private String[][] chessBoard = new String[column][row]; //所有棋的子(無覆蓋)
-    private String[][] coverChess = new String[column][row]; //目前棋盤狀態(有覆蓋)
+    private static String[][] coverChess = new String[column][row]; //目前棋盤狀態(有覆蓋)
 
     public ChessBoard() {
+        count = 0;
+        blackFirst = false;
     }
 
     private boolean canMoved(String o1, String o2) {
@@ -44,13 +50,6 @@ public class ChessBoard {
             return true;
         }
         System.out.println("無法吃");
-        return false;
-    }
-
-    private boolean canEat(String o1, String o2) {
-        if (Rule.compareB(o1, o2)) {
-            return true;
-        }
         return false;
     }
 
@@ -91,9 +90,20 @@ public class ChessBoard {
      * @param arr
      */
     public void openChess(String[][] coverchess, String[][] chessboard, int arr[]) {
+
         if (coverchess[arr[0]][arr[1]].equals("O")) { //如果還是覆蓋的狀態
             coverchess[arr[0]][arr[1]] = chessboard[arr[0]][arr[1]]; //打開賦值
-            System.out.println("以翻開" + "(" + arr[0] + "," + arr[1] + ")");
+            System.out.println("以翻開【" + coverchess[arr[0]][arr[1]] + "】(" + arr[0] + "," + arr[1] + ")");
+            count++;
+        }
+        if (count == 1) {
+            if (Rule.chessBlack.containsKey(coverchess[arr[0]][arr[1]])) {
+                System.out.println("Player1:黑棋,Player2:紅棋");
+                blackFirst = true;
+            } else {
+                System.out.println("Player1:紅棋,Player2:黑棋");
+                blackFirst = false;
+            }
         }
     }
 
@@ -104,7 +114,6 @@ public class ChessBoard {
      */
     public void move(String[][] coverchess, int arr[]) {
         Scanner sc = new Scanner(System.in);
-        //不是包包炮炮正常棋子
         if (!coverchess[arr[0]][arr[1]].equals("O") && !coverchess[arr[0]][arr[1]].equals("1")) {
             System.out.println("選擇移動方向:");
             while (true) {
@@ -120,6 +129,7 @@ public class ChessBoard {
                                 coverchess[arr[0]][arr[1]] = "1";
                                 stop = true;
                                 System.out.println("以移動");
+                                count++;
                                 break;
                             }
                         }
@@ -132,6 +142,7 @@ public class ChessBoard {
                                 coverchess[arr[0]][arr[1]] = "1";
                                 stop = true;
                                 System.out.println("以移動");
+                                count++;
                                 break;
                             }
                         }
@@ -144,6 +155,7 @@ public class ChessBoard {
                                 coverchess[arr[0]][arr[1]] = "1";
                                 stop = true;
                                 System.out.println("以移動");
+                                count++;
                                 break;
                             }
                         }
@@ -156,6 +168,7 @@ public class ChessBoard {
                                 coverchess[arr[0]][arr[1]] = "1";
                                 stop = true;
                                 System.out.println("以移動");
+                                count++;
                                 break;
                             }
                         }
@@ -172,75 +185,6 @@ public class ChessBoard {
         }
     }
 
-    public void eat(String[][] coverchess, int arr[]) {
-        //如果棋子是包包炮炮打一炮
-        Scanner sc = new Scanner(System.in);
-        System.out.println("選擇飛的方向:");
-        while (true) {
-            System.out.println("1:上 2:下 3:左 4:右 5:取消");
-            int dir = sc.nextInt();
-            boolean stop = false;
-            switch (Direction.getvalues(dir)) {
-                case 上:
-                    //如果沒超過邊界而且下一步不是蓋牌狀態
-                    if (arr[0] - 2 >= 0 && !coverchess[arr[0] - 2][arr[1]].equals("O") && !coverchess[arr[0] - 2][arr[1]].equals("1")) {
-                        //如果不是同隊就可以飛而且中間不能為空
-                        if (canEat(coverchess[arr[0]][arr[1]], coverchess[arr[0] - 2][arr[1]]) && !coverchess[arr[0] - 1][arr[1]].equals("1")) {
-                            coverchess[arr[0] - 2][arr[1]] = coverchess[arr[0]][arr[1]];
-                            coverchess[arr[0]][arr[1]] = "1";
-                            stop = true;
-                            System.out.println("以移動");
-                            break;
-                        }
-                    }
-                    System.out.println("請重新選擇移動方向:");
-                    break;
-                case 下:
-                    if (arr[0] + 2 < column && !coverchess[arr[0] + 2][arr[1]].equals("O") && !coverchess[arr[0] - 2][arr[1]].equals("1")) {
-                        if (canEat(coverchess[arr[0]][arr[1]], coverchess[arr[0] + 2][arr[1]])&& !coverchess[arr[0] - 1][arr[1]].equals("1")) {
-                            coverchess[arr[0] + 2][arr[1]] = coverchess[arr[0]][arr[1]];
-                            coverchess[arr[0]][arr[1]] = "1";
-                            stop = true;
-                            System.out.println("以移動");
-                            break;
-                        }
-                    }
-                    System.out.println("請重新選擇移動方向:");
-                    break;
-                case 右:
-                    if (arr[1] + 2 < row && !coverchess[arr[0]][arr[1] + 2].equals("O") && !coverchess[arr[0] - 2][arr[1]].equals("1")) {
-                        if (canEat(coverchess[arr[0]][arr[1]], coverchess[arr[0]][arr[1] + 2])&& !coverchess[arr[0] - 1][arr[1]].equals("1")) {
-                            coverchess[arr[0]][arr[1] + 2] = coverchess[arr[0]][arr[1]];
-                            coverchess[arr[0]][arr[1]] = "1";
-                            stop = true;
-                            System.out.println("以移動");
-                            break;
-                        }
-                    }
-                    System.out.println("請重新選擇移動方向:");
-                    break;
-                case 左:
-                    if (arr[1] - 2 >= 0 && !coverchess[arr[0]][arr[1] - 2].equals("O") && !coverchess[arr[0] - 2][arr[1]].equals("1")) {
-                        if (canEat(coverchess[arr[0]][arr[1]], coverchess[arr[0]][arr[1] - 2])&& !coverchess[arr[0] - 1][arr[1]].equals("1")) {
-                            coverchess[arr[0]][arr[1] - 2] = coverchess[arr[0]][arr[1]];
-                            coverchess[arr[0]][arr[1]] = "1";
-                            stop = true;
-                            System.out.println("以移動");
-                            break;
-                        }
-                    }
-                    System.out.println("請重新選擇移動方向:");
-                    break;
-                case 上一步:
-                    stop = true;
-                    break;
-            }
-            if (stop) {
-                break;
-            }
-        }
-    }
-
     /**
      * 選棋子 返回棋子
      *
@@ -249,7 +193,23 @@ public class ChessBoard {
      */
     public int[] selectChess(String[][] coverchess) {
         Scanner sc = new Scanner(System.in);
-        System.out.println("選擇棋子(x,y):");
+        if (count != 0) {
+            if (blackFirst) {
+                if (count % 2 == 0) {
+                    System.out.print("Player" + (count % 2 + 1) + "(黑子) 選擇棋子(x,y):");
+                } else {
+                    System.out.print("Player" + (count % 2 + 1) + "(紅子) 選擇棋子(x,y):");
+                }
+            } else {
+                if (count % 2 == 0) {
+                    System.out.print("Player" + (count % 2 + 1) + "(紅子) 選擇棋子(x,y):");
+                } else {
+                    System.out.print("Player" + (count % 2 + 1) + "(黑子) 選擇棋子(x,y):");
+                }
+            }
+        } else {
+            System.out.print("Player1 選擇棋子(x,y):");
+        }
         int[] arr = new int[2];
         while (true) {
             arr[0] = sc.nextInt();
@@ -262,8 +222,34 @@ public class ChessBoard {
                     System.out.println("選擇位置不是棋子");
                     System.out.println("請重新輸入:");
                 } else {
-                    System.out.println("以選擇(" + arr[0] + "," + arr[1] + ")");
-                    break;
+                    if (count != 0) {
+                        if (blackFirst) {
+                            if (count % 2 == 0 && Rule.chessBlack.containsKey(coverchess[arr[0]][arr[1]])) { //判斷紅黑棋玩家
+                                System.out.print("以選擇【" + coverchess[arr[0]][arr[1]] + "】(" + arr[0] + "," + arr[1] + ") ");
+                                break;
+                            } else if (count % 2 == 1 && Rule.chessRed.containsKey(coverchess[arr[0]][arr[1]])) {
+                                System.out.print("以選擇【" + coverchess[arr[0]][arr[1]] + "】(" + arr[0] + "," + arr[1] + ") ");
+                                break;
+                            } else {
+                                System.out.println("只能選擇自己的顏色");
+                                System.out.println("請重新輸入:");
+                            }
+                        } else {
+                            if (count % 2 == 0 && Rule.chessRed.containsKey(coverchess[arr[0]][arr[1]])) { //判斷紅黑棋玩家
+                                System.out.print("以選擇【" + coverchess[arr[0]][arr[1]] + "】(" + arr[0] + "," + arr[1] + ") ");
+                                break;
+                            } else if (count % 2 == 1 && Rule.chessBlack.containsKey(coverchess[arr[0]][arr[1]])) {
+                                System.out.print("以選擇【" + coverchess[arr[0]][arr[1]] + "】(" + arr[0] + "," + arr[1] + ") ");
+                                break;
+                            } else {
+                                System.out.println("只能選擇自己的顏色");
+                                System.out.println("請重新輸入:");
+                            }
+                        }
+                    } else {
+                        System.out.print("以選擇(" + arr[0] + "," + arr[1] + ") ");
+                        break;
+                    }
                 }
             }
         }
@@ -310,5 +296,148 @@ public class ChessBoard {
             }
             System.out.println();
         }
+    }
+
+    /**
+     * 包移動功能
+     *
+     * @param coverchess
+     * @param arr
+     */
+    public void bao(String[][] coverchess, int arr[]) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("輸入動作 1:移動 2:飛 3:取消");
+        switch (Action.getvalues(sc.nextInt())) {
+            case 吃:
+                System.out.println("選擇飛的方向:");
+                while (true) {
+                    System.out.println("1:上 2:下 3:左 4:右 5:取消");
+                    int dir = sc.nextInt();
+                    boolean stop = false;
+                    switch (Direction.getvalues(dir)) {
+                        case 上:
+                            LinkedList<Integer> haveChess = new LinkedList<>();
+                            for (int i = 1; i <= arr[0]; i++) {
+                                int x;
+                                //蒐集整排內所有元素 直到list內有2顆棋
+                                if (!coverchess[arr[0] - i][arr[1]].equals("1") && haveChess.size() < 2) {
+                                    x = arr[0] - i; //收集到的棋子座標
+                                    haveChess.add(x);
+                                }
+                            }
+                            //判斷list內是否有2個元素
+                            if (haveChess.size() == 2) {
+                                //rule包的規則判斷 如果不是同隊
+                                if (Rule.compareB(coverchess[arr[0]][arr[1]], coverchess[haveChess.get(1)][arr[1]])) {
+                                    coverchess[haveChess.get(1)][arr[1]] = coverchess[arr[0]][arr[1]];
+                                    coverchess[arr[0]][arr[1]] = "1";
+                                    System.out.println("以移動");
+                                    count++;
+                                    stop = true;
+                                }
+                            }
+                            //同一排元素不到2直接跳出迴圈
+                            System.out.println("請重新選擇移動方向:");
+                            break;
+                        case 下:
+                            LinkedList<Integer> haveChess1 = new LinkedList<>();
+                            for (int i = 1; i <= 3 - arr[0]; i++) {
+                                int x;
+                                //蒐集整排內所有元素 直到list內有2顆棋
+                                if (!coverchess[arr[0] + i][arr[1]].equals("1") && haveChess1.size() < 2) {
+                                    x = arr[0] + i; //收集到的棋子座標
+                                    haveChess1.add(x);
+                                }
+                            }
+                            //判斷list內是否有2個元素
+                            if (haveChess1.size() == 2) {
+                                //rule包的規則判斷 如果不是同隊
+                                if (Rule.compareB(coverchess[arr[0]][arr[1]], coverchess[haveChess1.get(1)][arr[1]])) {
+                                    coverchess[haveChess1.get(1)][arr[1]] = coverchess[arr[0]][arr[1]];
+                                    coverchess[arr[0]][arr[1]] = "1";
+                                    System.out.println("以移動");
+                                    count++;
+                                    stop = true;
+                                }
+                            }
+                            //同一排元素不到2直接跳出迴圈
+                            System.out.println("請重新選擇移動方向:");
+                            break;
+                        case 右:
+                            LinkedList<Integer> haveChess2 = new LinkedList<>();
+                            for (int i = 1; i <= 7 - arr[1]; i++) {
+                                int y;
+                                //蒐集整排內所有元素 直到list內有2顆棋
+                                if (!coverchess[arr[0]][arr[1] + i].equals("1") && haveChess2.size() < 2) {
+                                    y = arr[1] + i; //收集到的棋子座標
+                                    haveChess2.add(y);
+                                }
+                            }
+                            //判斷list內是否有2個元素
+                            if (haveChess2.size() == 2) {
+                                //rule包的規則判斷 如果不是同隊
+                                if (Rule.compareB(coverchess[arr[0]][arr[1]], coverchess[arr[0]][haveChess2.get(1)])) {
+                                    coverchess[arr[0]][haveChess2.get(1)] = coverchess[arr[0]][arr[1]];
+                                    coverchess[arr[0]][arr[1]] = "1";
+                                    System.out.println("以移動");
+                                    count++;
+                                    stop = true;
+                                }
+                            }
+                            //同一排元素不到2直接跳出迴圈
+                            System.out.println("請重新選擇移動方向:");
+                            break;
+                        case 左:
+                            LinkedList<Integer> haveChess3 = new LinkedList<>();
+                            for (int i = 1; i <= arr[1]; i++) {
+                                int y;
+                                //蒐集整排內所有元素 直到list內有2顆棋
+                                if (!coverchess[arr[0]][arr[1] - i].equals("1") && haveChess3.size() < 2) {
+                                    y = arr[1] - i; //收集到的棋子座標
+                                    haveChess3.add(y);
+                                }
+                            }
+                            //判斷list內是否有2個元素
+                            if (haveChess3.size() == 2) {
+                                //rule包的規則判斷 如果不是同隊
+                                if (Rule.compareB(coverchess[arr[0]][arr[1]], coverchess[arr[0]][haveChess3.get(1)])) {
+                                    coverchess[arr[0]][haveChess3.get(1)] = coverchess[arr[0]][arr[1]];
+                                    coverchess[arr[0]][arr[1]] = "1";
+                                    System.out.println("以移動");
+                                    count++;
+                                    stop = true;
+                                }
+                            }
+                            //同一排元素不到2直接跳出迴圈
+                            System.out.println("請重新選擇移動方向:");
+                            break;
+                        case 上一步:
+                            stop = true;
+                            break;
+                        default:
+                            break;
+                    }
+                    if (stop) {
+                        break;
+                    }
+                }
+                break;
+            case 移動:
+                move(coverchess, arr);
+                break;
+            case 取消:
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 返回blackFirst值
+     *
+     * @return
+     */
+    public boolean getblackFirst() {
+        return this.blackFirst;
     }
 }
