@@ -1,5 +1,16 @@
-public class Main {
+import javax.swing.*;
+
+public class Main  extends JFrame {
+    private Panel myPanel;
+    public Main()   {
+        myPanel=new Panel();
+        add(myPanel);
+        setSize(myPanel.getChessBoard().getIconWidth(),myPanel.getChessBoard().getIconWidth());
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setVisible(true);
+    }
     public static void main(String[] args) {
+        new Main();
         ChessBoard board = new ChessBoard();
         board.newGame();
         while (true) {
