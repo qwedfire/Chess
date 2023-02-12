@@ -1,212 +1,253 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.dnd.DragGestureEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 
 public class Panel extends JPanel {
-    //private BufferedImage bb=ImageIO.read(new File(""));
-    private ArrayList<JLabel> jlist;
-    private ArrayList<HashMap<String ,Integer>> press; //點擊座標
-    private ArrayList<Icon> icons;
-    private JLabel jl1;
-    private JLabel jl2;
-    private JLabel jl3;
-    private JLabel jl4;
-    private JLabel jl5;
-    private JLabel jl6;
-    private JLabel jl7;
-    private JLabel jl8;
-    private JLabel jl9;
-    private JLabel jl10;
-    private JLabel jl11;
-    private JLabel jl12;
-    private JLabel jl13;
-    private JLabel jl14;
-    private JLabel jl15;
-    private JLabel jl16;
-    private JLabel jl17;
-    private JLabel jl18;
-    private JLabel jl19;
-    private JLabel jl20;
-    private JLabel jl21;
-    private JLabel jl22;
-    private JLabel jl23;
-    private JLabel jl24;
-    private JLabel jl25;
-    private JLabel jl26;
-    private JLabel jl27;
-    private JLabel jl28;
-    private JLabel jl29;
-    private JLabel jl30;
-    private JLabel jl31;
-    private JLabel jl32;
-    private JLabel jl33; //放棋盤
-    private JLabel jl34;
-    private JLabel jl35;
-    private Icon redBing; //兵
-    private Icon redMa; //馬
-    private Icon redChe; //車
-    private Icon redXiang; //相
-    private Icon redPao; //炮
-    private Icon redShi; //士
-    private Icon redShuai; //帥
-    private Icon cover; //蓋牌
-    private Icon blackZu; //卒
-    private Icon blackMa; //馬
-    private Icon blackChe; //車
-    private Icon blackXiang; //象
-    private Icon blackPao; //包
-    private Icon blackShi; //士
-    private Icon blackJiang; //將
-    private Icon chessBoard; //棋盤
-    private JButton surrender;
+    private JLabel player;
+    private JLabel boardLabel;
+    private ChessBoard board;
+    private ArrayList<BoardItem> items;  //所有棋的座標、圖片
+
+    private boolean haveSelect = false; //判斷有沒有挑選棋子移動
+    private ArrayList<int[]> points = new ArrayList<>(); //紀錄點座標
+    private MyListener listener = new MyListener();
 
     public Panel() {
-        MyListener listener=new MyListener();
+        board = new ChessBoard();
+        board.newGame();
+        player=new JLabel("   Player1");
         addMouseListener(listener);
-        addMouseMotionListener(listener);
-        surrender = new JButton("投降");
-        surrender.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+        boardLabel = new JLabel(Resource.pictures.get("棋盤"));
+        items = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 8; j++) {
+                System.out.print(board.getChessboard()[i][j] + " ");
+                items.add(new BoardItem(53 + 57 * j, 55 + 58 * i, Resource.pictures.get("背面")));
             }
-        });
-        press=new ArrayList<>();
-        redBing = new ImageIcon("dir/红卒.gif");
-        redShi = new ImageIcon("dir/红士.gif");
-        redShuai = new ImageIcon("dir/红将.gif");
-        redPao = new ImageIcon("dir/红炮.gif");
-        redXiang = new ImageIcon("dir/红象.gif");
-        redChe = new ImageIcon("dir/红车.GIF");
-        redMa = new ImageIcon("dir/红马.gif");
-        cover = new ImageIcon("dir/象棋.png");
-        blackZu = new ImageIcon("dir/黑卒.gif");
-        blackShi = new ImageIcon("dir/黑士.gif");
-        blackJiang = new ImageIcon("dir/黑将.gif");
-        blackPao = new ImageIcon("dir/黑炮.gif");
-        blackXiang = new ImageIcon("dir/黑象.gif");
-        blackChe = new ImageIcon("dir/黑车.gif");
-        blackMa = new ImageIcon("dir/黑马.gif");
-        chessBoard = new ImageIcon("dir/main.gif");
-        jl1 = new JLabel(cover);
-        jl2 = new JLabel(cover);
-        jl3 = new JLabel(cover);
-        jl4 = new JLabel(cover);
-        jl5 = new JLabel(cover);
-        jl6 = new JLabel(cover);
-        jl7 = new JLabel(cover);
-        jl8 = new JLabel(cover);
-        jl9 = new JLabel(cover);
-        jl10 = new JLabel(cover);
-        jl11 = new JLabel(cover);
-        jl12 = new JLabel(cover);
-        jl13 = new JLabel(cover);
-        jl14 = new JLabel(cover);
-        jl15 = new JLabel(cover);
-        jl16 = new JLabel(cover);
-        jl17 = new JLabel(cover);
-        jl18 = new JLabel(cover);
-        jl19 = new JLabel(cover);
-        jl20 = new JLabel(cover);
-        jl21 = new JLabel(cover);
-        jl22 = new JLabel(cover);
-        jl23 = new JLabel(cover);
-        jl24 = new JLabel(cover);
-        jl25 = new JLabel(cover);
-        jl26 = new JLabel(cover);
-        jl27 = new JLabel(cover);
-        jl28 = new JLabel(cover);
-        jl29 = new JLabel(cover);
-        jl30 = new JLabel(cover);
-        jl31 = new JLabel(cover);
-        jl32 = new JLabel(cover);
-        jl33 = new JLabel(chessBoard);
-        jl34 = new JLabel();
-        jl35 = new JLabel();
-        jlist = new ArrayList<>();  //jlist包含所有棋子(32顆) 一開始全部預設為cover圖片
-        jlist.add(jl1);
-        jlist.add(jl2);
-        jlist.add(jl3);
-        jlist.add(jl4);
-        jlist.add(jl5);
-        jlist.add(jl6);
-        jlist.add(jl7);
-        jlist.add(jl8);
-        jlist.add(jl9);
-        jlist.add(jl10);
-        jlist.add(jl11);
-        jlist.add(jl12);
-        jlist.add(jl13);
-        jlist.add(jl14);
-        jlist.add(jl15);
-        jlist.add(jl16);
-        jlist.add(jl17);
-        jlist.add(jl18);
-        jlist.add(jl19);
-        jlist.add(jl20);
-        jlist.add(jl21);
-        jlist.add(jl22);
-        jlist.add(jl23);
-        jlist.add(jl24);
-        jlist.add(jl25);
-        jlist.add(jl26);
-        jlist.add(jl27);
-        jlist.add(jl28);
-        jlist.add(jl29);
-        jlist.add(jl30);
-        jlist.add(jl31);
-        jlist.add(jl32);
-
-        setLayout(new GridLayout(1, 1));
-        add(jl33); //先放棋盤
-        jl33.setLayout(new GridLayout(2, 1));
-        jl33.add(jl34);
-        jl33.add(jl35); //再將33分上下部分(34 35)
-        jl34.setLayout(new FlowLayout()); //(34上)放入按鈕投降
-        jl34.add(surrender);
-
-        jl35.setLayout(new GridLayout(4, 8, 1, 1));
-        for (JLabel jLabel : jlist) {
-            jl35.add(jLabel);  //(35下)放入所有棋子
+            System.out.println();
+        }
+        add(boardLabel);
+        boardLabel.setLayout(new FlowLayout());
+        boardLabel.add(player);
+        for (int i = 0; i < 32; i++) {
+            boardLabel.add(items.get(i));
         }
     }
+
+    private class BoardItem extends JLabel {
+        private int x;
+        private int y;
+        private Icon icon;
+        private JLabel jLabel;
+
+        public BoardItem(int x, int y, Icon icon) {
+            this.x = x;
+            this.y = y;
+            this.icon = icon;
+        }
+
+        public BoardItem(int x, int y, JLabel jLabel) {
+            this.x = x;
+            this.y = y;
+            this.jLabel = jLabel;
+        }
+
+        @Override
+        public int getX() {
+            return x;
+        }
+
+        @Override
+        public int getY() {
+            return y;
+        }
+
+        @Override
+        public void setIcon(Icon icon) {
+            this.icon = icon;
+        }
+
+        public JLabel getjLabel() {
+            return jLabel;
+        }
+
+        @Override
+        public Icon getIcon() {
+            return icon;
+        }
+
+        public boolean containIcon(Icon icon) {
+            return this.icon == icon;
+        }
+    }
+
     private class MyListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
-            HashMap<String ,Integer> point=new HashMap();
-            point.put("x", e.getX());point.put("y", e.getY());
-            System.out.println(e.getX()+"  "+e.getY());
-            press.add(point);
-//            repaint(); //重畫component類別方法
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (52 + 57 * j < e.getX() && e.getX() < 94 + 57 * j && 67 + 58 * i < e.getY() &&
+                            e.getY() < 105 + 58 * i) {
+                        int point[] = {i, j}; //選擇棋子 (滑鼠點擊動作)
+                        if (board.getCoverchess()[point[0]][point[1]].equals("O")) { //如果棋子覆蓋狀態
+                            System.out.println(board.getCoverchess()[point[0]][point[1]]);
+                            board.openChess(board.getCoverchess(), board.getChessboard(), point);
+                            items.get(i * 8 + j).setIcon(Resource.pictures.get(board.getChessboard()[i][j]));  //翻開的動作
+                            if(board.getblackFirst()){ //黑棋開局
+                                if(board.getCount()%2==0){ //第一手
+                                    player.setText("Player1(黑棋)");
+                                }else {
+                                    player.setText("Player2(紅棋)");
+                                }
+                            }else {  //紅棋開局
+                                if(board.getCount()%2==0){  //第一手
+                                    player.setText("Player1(紅棋)");
+                                }else {
+                                    player.setText("Player2(黑棋)");
+                                }
+                            }
+
+                        } else { //點擊棋子一定是移動 第一次標記棋子 第二次移動到指定位置
+                            haveSelect = false;
+                            for (int k = 0; k < 32; k++) {
+                                if (items.get(k).containIcon(Resource.pictures.get("標記"))) {
+                                    haveSelect = true;
+                                }
+                            }
+                            if (haveSelect) { //點第二次
+                                if (board.getCoverchess()[points.get(0)[0]][points.get(0)[1]].equals("包") ||
+                                        board.getCoverchess()[points.get(0)[0]][points.get(0)[1]].equals("炮")) { //如果第一次選包或炮移動
+                                    if (Math.abs(points.get(0)[0] + points.get(0)[1] - i - j) == 1) { //判斷位移一格
+                                        board.move(board.getCoverchess(), points.get(0), point);
+                                        for (int k = 0; k < 32; k++) {
+                                            items.get(k).setIcon(Resource.pictures.get(board.getCoverchess()[k / 8][k % 8]));
+                                            if (k % 8 == 0) {
+                                                System.out.println();
+                                            }
+                                            System.out.print(board.getCoverchess()[k / 8][k % 8] + " ");
+                                        }
+                                        if(board.getblackFirst()) {
+                                            if(board.getCount()%2==0){
+                                                player.setText("Player1(黑棋)");
+                                            }else {
+                                                player.setText("Player2(紅棋)");
+                                            }
+                                        }else {
+                                            if(board.getCount()%2==0){
+                                                player.setText("Player1(紅棋)");
+                                            }else {
+                                                player.setText("Player2(黑棋)");
+                                            }
+                                        }
+                                        points.clear();
+                                        System.out.println();
+                                    } else { //如果包或炮飛
+                                        board.bao1(board.getCoverchess(), points.get(0), point);
+                                        for (int k = 0; k < 32; k++) {
+                                            items.get(k).setIcon(Resource.pictures.get(board.getCoverchess()[k / 8][k % 8]));
+                                            if (k % 8 == 0) {
+                                                System.out.println();
+                                            }
+                                            System.out.print(board.getCoverchess()[k / 8][k % 8] + " ");
+                                        }
+                                        if(board.getblackFirst()) {
+                                            if(board.getCount()%2==0){
+                                                player.setText("Player1(黑棋)");
+                                            }else {
+                                                player.setText("Player2(紅棋)");
+                                            }
+                                        }else {
+                                            if(board.getCount()%2==0){
+                                                player.setText("Player1(紅棋)");
+                                            }else {
+                                                player.setText("Player2(黑棋)");
+                                            }
+                                        }
+                                        points.clear();
+                                        System.out.println();
+                                    }
+                                } else {  //如果第一次移動不是包或炮
+                                    if (Math.abs(points.get(0)[0] + points.get(0)[1] - i - j) == 1) { //判斷位移一格
+                                        points.add(point);
+                                        System.out.println(points.get(0)[0] + "," + points.get(0)[1] + " " + points.get(1)[0] + "," + points.get(1)[1]);
+                                        board.move(board.getCoverchess(), points.get(0), point);
+                                        for (int l = 0; l < 32; l++) {
+                                            items.get(l).setIcon(Resource.pictures.get(board.getCoverchess()[l / 8][l % 8]));
+                                            if (l % 8 == 0) {
+                                                System.out.println();
+                                            }
+                                            System.out.print(board.getCoverchess()[l / 8][l % 8] + " ");
+                                        }
+                                        if(board.getblackFirst()) {
+                                            if(board.getCount()%2==0){
+                                                player.setText("Player1(黑棋)");
+                                            }else {
+                                                player.setText("Player2(紅棋)");
+                                            }
+                                        }else {
+                                            if(board.getCount()%2==0){
+                                                player.setText("Player1(紅棋)");
+                                            }else {
+                                                player.setText("Player2(黑棋)");
+                                            }
+                                        }
+                                        points.clear();
+                                        System.out.println();
+                                    } else { //如果不是移動一格
+                                        System.out.println("無法移動");
+                                        for (int k = 0; k < 32; k++) {
+                                            items.get(k).setIcon(Resource.pictures.get(board.getCoverchess()[k / 8][k % 8]));
+                                            if (k % 8 == 0) {
+                                                System.out.println();
+                                            }
+                                            System.out.print(board.getCoverchess()[k / 8][k % 8] + " ");
+                                        }
+                                        points.clear();
+                                        System.out.println();
+                                    }
+                                }
+                            } else { //點第一次
+                                if (!board.getCoverchess()[i][j].equals("1")) { //第一次點不能選空格
+                                    if(board.getblackFirst()) { //黑棋先
+                                        if(board.getCount()%2==0&&Rule.chessBlack.containsKey(board.getCoverchess()[i][j])) { //黑
+                                            player.setText("Player1(黑棋)");
+                                            points.add(point);
+                                            System.out.println("選擇" + board.getCoverchess()[point[0]][point[1]]);
+                                            items.get(i * 8 + j).setIcon(Resource.pictures.get("標記"));
+                                        } else if (board.getCount()%2==1&&Rule.chessRed.containsKey(board.getCoverchess()[i][j])) { //紅
+                                            player.setText("Player2(紅棋)");
+                                            points.add(point);
+                                            System.out.println("選擇" + board.getCoverchess()[point[0]][point[1]]);
+                                            items.get(i * 8 + j).setIcon(Resource.pictures.get("標記"));
+                                        }else {
+                                            System.out.println("只能選自己的顏色");
+                                        }
+                                    }else { //紅棋先
+                                        if(board.getCount()%2==0&&Rule.chessRed.containsKey(board.getCoverchess()[i][j])) { //紅
+                                            player.setText("Player1(紅棋)");
+                                            points.add(point);
+                                            System.out.println("選擇" + board.getCoverchess()[point[0]][point[1]]);
+                                            items.get(i * 8 + j).setIcon(Resource.pictures.get("標記"));
+                                        } else if (board.getCount()%2==1&&Rule.chessBlack.containsKey(board.getCoverchess()[i][j])) { //黑
+                                            player.setText("Player2(黑棋)" +
+                                                    "");
+                                            points.add(point);
+                                            System.out.println("選擇" + board.getCoverchess()[point[0]][point[1]]);
+                                            items.get(i * 8 + j).setIcon(Resource.pictures.get("標記"));
+                                        }else {
+                                            System.out.println("只能選自己的顏色");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            repaint(); //重畫component類別方法
         }
-
-//        @Override
-//        public void mousePressed(MouseEvent e) {
-//            HashMap<String ,Integer> point=new HashMap();
-//            point.put("x", e.getX());point.put("y", e.getY());
-//            System.out.println(e.getX()+"  "+e.getY());
-//            press.add(point);
-//            repaint(); //重畫component類別方法
-//        }
-
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            System.out.println(e.getX()+"  "+e.getY());
-//            repaint();
-        }
-    }
-
-    public Icon getChessBoard() {
-        return chessBoard;
     }
 }
