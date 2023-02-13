@@ -8,9 +8,9 @@ public class User implements Serializable {
     private String username;
     private String password;
     private String nickname;
-    private int age;
+    private String age;
 
-    public User(String username, String password, String nickname, int age) {
+    public User(String username, String password, String nickname, String age) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
@@ -41,11 +41,11 @@ public class User implements Serializable {
         this.nickname = nickname;
     }
 
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 

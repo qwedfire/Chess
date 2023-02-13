@@ -4,6 +4,7 @@ import javax.swing.*;
 public class Main extends JFrame {
     private static Panel myPanel;
     public Main() {
+        super("象棋遊戲");
         myPanel = new Panel();
         add(myPanel);
         setSize(Resource.pictures.get("棋盤").getIconWidth(), Resource.pictures.get("棋盤").getIconHeight());
@@ -12,8 +13,8 @@ public class Main extends JFrame {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        new Main();
+//    public static void main(String[] args) {
+//        new Main();
 //        while (true) {
 //            測試
 //            myPanel.getBoard().printAll();
@@ -38,5 +39,5 @@ public class Main extends JFrame {
 //                myPanel.getBoard().move(myPanel.getBoard().getCoverchess(),arr); //移動
 //            }
 //        }
-    }
+//    }
 }

@@ -3,13 +3,24 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Properties;
 
 public class Reg extends JFrame {
-    Login log;
-    JPasswordField jp;
-    JTextArea jt;
-    JButton jb;
-    JButton jb1;
+    private static Connection conn;
+    private final static String USER="root";//整理資料
+    private final static String PASSWORD="root";
+    private final static String URL="jdbc:mysql://localhost:3306/iii";
+    private final static String SQL_CHECK="select count(*) count from member where account=? ";
+    private final static String SQL_INSERT="insert into member(account,password,nickname,age)values(?,?,?,?) ";
+    private Login log;
+    private JPasswordField jp;
+    private JTextArea jt;
+    private JButton jb;
+    private JButton jb1;
     public Reg(){
         super("用戶註冊");
         setLayout(new GridLayout(1,1));
@@ -47,7 +58,25 @@ public class Reg extends JFrame {
         jb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                reg(jt.getText(),jp.getText(),jt1.getText(),jt2.getText());
+                Properties prop=new Properties();
+                prop.put("user", USER);prop.put("password",PASSWORD);
+                try {
+                    conn=DriverManager.getConnection(URL,prop);
+                    if(checkAccount(jt.getText())) {
+                        if(addMember(jt.getText(),jp.getText(),jt1.getText(),jt2.getText())) {
+                            System.out.println("Register success");
+                            setVisible(false);
+                            log=new Login();
+                        }else {
+                            System.out.println("Register failue");
+                        }
+                    }else {
+                        //相同帳號
+                        System.out.println("acount exist");
+                    }
+                }catch(Exception ee) {
+                    System.out.println(ee);
+                }
             }
         });
         jb1.addActionListener(new ActionListener() {
@@ -64,38 +93,37 @@ public class Reg extends JFrame {
         setLocation(800,400);
     }
     public static void main(String[] args) {
-        Reg t=new Reg();
+        new Reg();
     }
-    public void reg(String username,String password,String nickname,String age){
-        if(username==null||password==null||nickname==null||
-                age==null||!age.matches("[0-9]+")){
-            //如果進入當前判斷，說明錄入信息有問題，不允許繼續向下執行程序了
-            System.out.println("輸入欄不能為空");
-            return;
-        }
-        //2.將用戶信息封裝到一個User對象，並序列化到文件中
-        User user = new User(username,password,nickname,Integer.parseInt(age));
-        //將用戶信息以用戶名.obj的形式存儲到users目錄中
-        File userFile = new File("./user", username + ".obj");
-        //判斷當前文件是否已存在，如果存在，可以判斷是重複用戶
-        if(userFile.exists()){
-            System.out.println("用戶以存在");
-            setVisible(false);
-            return;
-        }
-        try (
-                FileOutputStream fos = new FileOutputStream(userFile);
-                ObjectOutputStream oos = new ObjectOutputStream(fos)
-        ) {
-            //将user对象序列化到userFile这个File对象所绑定的文件
-            oos.writeObject(user);
-            //註冊成功
-            System.out.println("註冊成功");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        setVisible(false);
-        log=new Login();
-        System.out.println("處理用戶註冊完畢!!!");
+    /**
+     * 檢查帳號是否存在
+     * @param account
+     * @return
+     * @throws Exception
+     */
+    private static boolean checkAccount(String account) throws Exception {
+        boolean ret;
+        PreparedStatement pstmt=conn.prepareStatement(SQL_CHECK);
+        pstmt.setString(1, account);
+        ResultSet rs=pstmt.executeQuery();
+        rs.next();
+        ret=rs.getInt("count")==0;
+        pstmt.close(); //pstmt為區域變數關閉可以讓記憶體釋放
+        return ret;
+    }
+    /**
+     * 創建帳號
+     * @return
+     */
+    private static boolean addMember(String account,String password,String nickname,String age) throws Exception{
+        boolean isOK=false;
+        PreparedStatement pstmt=conn.prepareStatement(SQL_INSERT);
+        pstmt.setString(1, account);
+        pstmt.setString(2, BCrypt.hashpw(password, BCrypt.gensalt()));
+        pstmt.setString(3, nickname);
+        pstmt.setString(4,age);
+        isOK=pstmt.executeUpdate()!=0;
+        pstmt.close();
+        return isOK; //等於0沒創建成功
     }
 }

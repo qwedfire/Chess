@@ -3,12 +3,22 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Properties;
+import java.util.Scanner;
 
 public class Login extends JFrame {
-    Main m;
-    JPasswordField jp;
-    JTextArea jt;
-    JButton jb;
+    private final static String USER="root";//整理資料
+    private final static String PASSWORD="root";
+    private final static String URL="jdbc:mysql://localhost:3306/iii";
+    private final static String SQL_LOGIN="select * from member where account=? ";
+    private Main m;
+    private JPasswordField jp;
+    private JTextArea jt;
+    private JButton jb;
     public Login(){
         super("用戶登入");
         setLayout(new GridLayout(1,1));
@@ -42,39 +52,51 @@ public class Login extends JFrame {
         setSize(300,150);
         setLocation(800,400);
     }
-//    public static void main(String[] args) {
-//        new Login();
-//    }
     public void login(String username,String password){
         System.out.println("開始處理用戶登入....");
-        System.out.println(username + "," + password);
         if(username==null||password==null){
             System.out.println("用戶或密碼不能為空");
             return;
         }
-        //2
-        File userFile = new File("./user",username+".obj");
-        if(userFile.exists()){//用户名输入正确
-            try (
-                    FileInputStream fis = new FileInputStream(userFile);
-                    ObjectInputStream ois = new ObjectInputStream(fis);
-            ){
-                //读取该注册用户信息
-                User user = (User)ois.readObject();
-                //如果用戶提交的密碼和註冊用戶紀錄的密碼相同，則允許登入
-                if(user.getPassword().equals(password)){//密码正确
-                    //登入成功
-                    System.out.println("登入成功");
-                    setVisible(false);
+        Properties prop=new Properties();
+        prop.put("user", USER);prop.put("password",PASSWORD);
+        try (Connection conn= DriverManager.getConnection(URL,prop);
+             PreparedStatement pstmt=conn.prepareStatement(SQL_LOGIN)){
+            pstmt.setString(1, jt.getText());
+            ResultSet rs=pstmt.executeQuery();
+            if(rs.next()) { //唯一一筆
+                System.out.println(3);
+                if(BCrypt.checkpw(jp.getText(),rs.getString("password"))) {
+                    //login
+                    User user=new User(rs.getString("account"),rs.getString("password"),rs.getString("nickname"),rs.getString("age"));
+                    System.out.printf("welcome,%s/%s\n",user.getNickname(),user.getUsername());
                     m=new Main();
-                    return;
+                    //change password process
+//                            System.out.println("change password(newpassword or no):");
+//                            String newPassword=sc.next();
+//                            if(newPassword.length()>=6) {
+//                                PreparedStatement pstmt2=conn.prepareStatement(SQL_CHPASSWORD);
+//                                pstmt2.setString(1, BCrypt.hashpw(newPassword,BCrypt.gensalt()));
+//                                if(pstmt2.executeUpdate()>0) {
+//                                    //SUCCESS
+//                                    System.out.println("change password success!");
+//                                }else {
+//                                    //更換失敗
+//                                    System.out.println("change password failure!");
+//                                }
+//                            }else {
+//                                //不想換
+//                                System.out.println("no change~");
+//                            }
+                }else {
+                    //帳號不存在
+                    System.out.println("login failure(2)");
                 }
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+            }else {
+                System.out.println("帳號或密碼不存在");
             }
+        }catch(Exception ee) {
+            System.out.println(ee);
         }
-        //如果程序走到這裡，用戶名或密碼有誤
-        System.out.println("輸入用戶或密碼有誤");
-        System.out.println("處理用戶登入完畢!!!");
     }
 }

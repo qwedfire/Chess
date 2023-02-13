@@ -100,7 +100,7 @@ public class Panel extends JPanel {
                         int point[] = {i, j}; //點的座標
                         if (isCover(i, j)) { //如果棋子覆蓋狀態
                             board.openChess(board.getCoverchess(), board.getChessboard(), point);  //文字翻棋
-                            items.get(i * 8 + j).setIcon(Resource.pictures.get(board.getChessboard()[i][j]));  //翻開的動作
+                            setAllIcon();
                             setPlayer();
                         } else { //點擊棋子一定是移動 第一次標記棋子 第二次移動到指定位置
                             if (haveSelect()) { //如果有標記的棋子
