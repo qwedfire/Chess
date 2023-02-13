@@ -20,8 +20,12 @@ public class Resource {
             put("將", new ImageIcon("dir/黑将.gif"));
             put("背面", new ImageIcon("dir/象棋.png"));
             put("棋盤", new ImageIcon("dir/main.gif"));
-            put("標記",new ImageIcon("dir/select.gif"));
+            put("標記", new ImageIcon("dir/select.gif"));
             put("O", new ImageIcon("dir/象棋.png"));
         }
     };
+    //給棋盤賦值使用
+    public static String[] chessValue = {"兵", "兵", "兵", "兵", "兵", "卒", "卒", "卒", "卒", "卒",
+            "傌", "傌", "馬", "馬", "俥", "俥", "車", "車", "炮", "炮", "包",
+            "包", "相", "相", "象", "象", "仕", "仕", "士", "士", "帥", "將"};
 }
