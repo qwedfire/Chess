@@ -3,8 +3,7 @@ import java.io.Serializable;
 /**
  * 使用當前類的每一個實例來保存一個用戶的註冊信息
  */
-public class User implements Serializable {
-    static final long serialVersionUID=42L;
+public class User   {
     private String username;
     private String password;
     private String nickname;

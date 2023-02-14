@@ -10,15 +10,19 @@ public class Panel extends JPanel {
     private JLabel boardLabel;
     private ChessBoard board;
     private ArrayList<BoardItem> items;  //所有棋的座標、圖片
-    private MyListener listener;//滑鼠動作
     public Panel() {
         board = new ChessBoard();
-        listener = new MyListener();
         player = new JLabel("");
-        addMouseListener(listener);
+        addMouseListener(new MyListener());
         boardLabel = new JLabel(Resource.pictures.get("棋盤"));
         items = new ArrayList<>();
-        init();
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 8; j++) {
+                System.out.print(board.getChessBoard()[i][j] + " ");
+                items.add(new BoardItem(53 + 57 * j, 55 + 58 * i, Resource.pictures.get("背面")));
+            }
+            System.out.println();
+        }
         add(boardLabel);
         boardLabel.setLayout(new FlowLayout());
         boardLabel.add(player);
@@ -99,7 +103,7 @@ public class Panel extends JPanel {
                     if (haveItem(i, j, e)) { //如果點擊的位置有物件
                         int point[] = {i, j}; //點的座標
                         if (isCover(i, j)) { //如果棋子覆蓋狀態
-                            board.openChess(board.getCoverchess(), board.getChessboard(), point);  //文字翻棋
+                            board.openChess(board.getCoverchess(), board.getChessBoard(), point);  //文字翻棋
                             setAllIcon();
                             setPlayer();
                         } else { //點擊棋子一定是移動 第一次標記棋子 第二次移動到指定位置
@@ -266,27 +270,5 @@ public class Panel extends JPanel {
             }
             return false;
         }
-    }
-
-    /**
-     * 列印初始狀態的棋盤 (只會使用一次)
-     */
-    public void init() {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 8; j++) {
-                System.out.print(board.getChessboard()[i][j] + " ");
-                items.add(new BoardItem(53 + 57 * j, 55 + 58 * i, Resource.pictures.get("背面")));
-            }
-            System.out.println();
-        }
-    }
-
-    /**
-     * 返回board
-     *
-     * @return
-     */
-    public ChessBoard getBoard() {
-        return board;
     }
 }
