@@ -1,7 +1,10 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -10,16 +13,26 @@ public class Panel extends JPanel {
     private JLabel boardLabel;
     private ChessBoard board;
     private ArrayList<BoardItem> items;  //所有棋的座標、圖片
+    private ArrayList<BoardItem> selects; //所有標記的圖片 座標
+
     public Panel() {
         board = new ChessBoard();
         player = new JLabel("");
         addMouseListener(new MyListener());
         boardLabel = new JLabel(Resource.pictures.get("棋盤"));
         items = new ArrayList<>();
+        selects = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 8; j++) {
                 System.out.print(board.getChessBoard()[i][j] + " ");
                 items.add(new BoardItem(53 + 57 * j, 55 + 58 * i, Resource.pictures.get("背面")));
+            }
+            System.out.println();
+        }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 8; j++) {
+                System.out.print(board.getChessBoard()[i][j] + " ");
+                selects.add(new BoardItem(53 + 57 * j, 55 + 58 * i, Resource.pictures.get("")));
             }
             System.out.println();
         }
@@ -28,6 +41,7 @@ public class Panel extends JPanel {
         boardLabel.add(player);
         for (int i = 0; i < 32; i++) {
             boardLabel.add(items.get(i));
+            boardLabel.add(selects.get(i));
         }
     }
 
@@ -70,6 +84,15 @@ public class Panel extends JPanel {
         @Override
         public void setIcon(Icon icon) {
             this.icon = icon;
+        }
+
+        public JLabel selectIcon() {
+            BoardItem boardItem = new BoardItem(getX(), getY(), getIcon());
+            BoardItem boardItem1 = new BoardItem(getX(), getY(), Resource.pictures.get("標記"));
+            JLabel jLabel = new JLabel();
+            jLabel.add(boardItem1);
+            jLabel.add(boardItem);
+            return jLabel;
         }
 
         /**
@@ -145,12 +168,13 @@ public class Panel extends JPanel {
                                             player.setText("Player1(黑棋)");
                                             points.add(point);
                                             System.out.println("選擇" + board.getCoverchess()[i][j]);
-                                            items.get(i * 8 + j).setIcon(Resource.pictures.get("標記"));
+                                            selects.get(i * 8 + j).setIcon(Resource.pictures.get("標記"));
                                         } else if (board.getCount() % 2 == 1 && Rule.chessRed.containsKey(board.getCoverchess()[i][j])) { //紅
                                             player.setText("Player2(紅棋)");
                                             points.add(point);
                                             System.out.println("選擇" + board.getCoverchess()[i][j]);
-                                            items.get(i * 8 + j).setIcon(Resource.pictures.get("標記"));
+                                            selects.get(i * 8 + j).setIcon(Resource.pictures.get("標記"));
+
                                         } else {
                                             System.out.println("只能選自己的顏色");
                                         }
@@ -159,12 +183,14 @@ public class Panel extends JPanel {
                                             player.setText("Player1(紅棋)");
                                             points.add(point);
                                             System.out.println("選擇" + board.getCoverchess()[i][j]);
-                                            items.get(i * 8 + j).setIcon(Resource.pictures.get("標記"));
+                                            selects.get(i * 8 + j).setIcon(Resource.pictures.get("標記"));
+
                                         } else if (board.getCount() % 2 == 1 && Rule.chessBlack.containsKey(board.getCoverchess()[i][j])) { //黑
                                             player.setText("Player2(黑棋)");
                                             points.add(point);
                                             System.out.println("選擇" + board.getCoverchess()[i][j]);
-                                            items.get(i * 8 + j).setIcon(Resource.pictures.get("標記"));
+                                            selects.get(i * 8 + j).setIcon(Resource.pictures.get("標記"));
+
                                         } else {
                                             System.out.println("只能選自己的顏色");
                                         }
@@ -197,6 +223,7 @@ public class Panel extends JPanel {
         private void setAllIcon() {
             for (int k = 0; k < 32; k++) {
                 items.get(k).setIcon(Resource.pictures.get(board.getCoverchess()[k / 8][k % 8]));
+                selects.get(k).setIcon(Resource.pictures.get(board.getCoverchess()[k / 8][k % 8]));
                 if (k % 8 == 0) {
                     System.out.println();
                 }
@@ -244,7 +271,7 @@ public class Panel extends JPanel {
          */
         private boolean haveSelect() {
             for (int i = 0; i < 32; i++) {  //32顆棋子
-                if (items.get(i).containIcon(Resource.pictures.get("標記"))) {
+                if (selects.get(i).containIcon(Resource.pictures.get("標記"))) {
                     return true;
                 }
             }

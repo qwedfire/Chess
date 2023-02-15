@@ -6,7 +6,7 @@ public class ChessBoard {
     private int count;
     private String[][] chessBoard; //所有棋的子(無覆蓋)
     private String[][] coverChess; //目前棋盤狀態(有覆蓋)
-
+    private boolean[][] isSelects; //被選
     public ChessBoard() {
         chessBoard = new String[column][row];
         coverChess = new String[column][row];

@@ -76,8 +76,10 @@ public class Login extends JFrame {
                 } else {
                     //帳號不存在
                     System.out.println("login failure(2)");
+                    JOptionPane.showMessageDialog(null, "帳號或密碼不正確");
                 }
             } else {
+                JOptionPane.showMessageDialog(null, "帳號或密碼不正確");
                 System.out.println("帳號或密碼不存在");
             }
         } catch (Exception ee) {

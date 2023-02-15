@@ -66,15 +66,17 @@ public class Reg extends JFrame {
                 prop.put("password", PASSWORD);
                 try {
                     conn = DriverManager.getConnection(URL, prop);
-                    if (checkAccount(jt.getText())) {
+                    if (jt.getText() .equals("") || jp.getText() .equals("") || jt1.getText() .equals("") || jt2.getText() .equals("")) {
+                        JOptionPane.showMessageDialog(null, "有欄位尚未輸入");
+                    } else if (checkAccount(jt.getText())) {
                         if (addMember(jt.getText(), jp.getText(), jt1.getText(), jt2.getText())) {
                             System.out.println("Register success");
                             setVisible(false);
                             new Login();
-                        } else {
-                            System.out.println("Register failue");
                         }
                     } else {
+                        JOptionPane.showMessageDialog(null, "用戶已存在");
+                        System.out.println(jt.getText()+"1");
                         //相同帳號
                         System.out.println("acount exist");
                     }
