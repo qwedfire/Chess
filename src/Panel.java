@@ -4,16 +4,18 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 
 
-public class Panel extends JPanel {
+public class Panel extends JPanel implements Serializable{
+    static final long serialVersionUID = 42L;
     private JLabel player;
     private JLabel boardLabel;
     private ChessBoard board;
     private ArrayList<BoardItem> items;  //所有棋的座標、圖片
     private ArrayList<BoardItem> selects; //所有標記的圖片 座標
+    private JButton button;
 
     public Panel() {
         board = new ChessBoard();
@@ -26,12 +28,6 @@ public class Panel extends JPanel {
             for (int j = 0; j < 8; j++) {
                 System.out.print(board.getChessBoard()[i][j] + " ");
                 items.add(new BoardItem(53 + 57 * j, 55 + 58 * i, Resource.pictures.get("背面")));
-            }
-            System.out.println();
-        }
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 8; j++) {
-                System.out.print(board.getChessBoard()[i][j] + " ");
                 selects.add(new BoardItem(53 + 57 * j, 55 + 58 * i, Resource.pictures.get("")));
             }
             System.out.println();
@@ -297,5 +293,40 @@ public class Panel extends JPanel {
             }
             return false;
         }
+    }
+
+    /**
+     * 存檔
+     * @param outputStream
+     * @throws Exception
+     */
+    public void save(OutputStream outputStream) throws Exception{
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        GameSave gameSave = new GameSave(board,this);
+        objectOutputStream.writeObject(gameSave);
+        System.out.println("已存入遊戲");
+
+    }
+
+    /**
+     * 載入
+     * @param inputStream
+     * @throws Exception
+     */
+    public void load(InputStream inputStream) throws Exception{
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        GameSave gameSave = (GameSave) objectInputStream.readObject();
+        board=gameSave.getChessBoard();
+        for (int i = 0; i < 32; i++) {
+            items.get(i).setIcon(Resource.pictures.get(board.getCoverchess()));
+        }
+        repaint();
+        System.out.println("已載入遊戲");
+//        chessBoard = (XqChessBoard) gameSave.getChessBoard();
+//        red = gameSave.isRed();
+//        playing = gameSave.isPlaying();
+//        selectPoint = null;
+//        walkState.setChessBoard(chessBoard);
+//        repaintBoard();
     }
 }

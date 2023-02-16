@@ -1,5 +1,7 @@
+import java.io.*;
 import java.util.LinkedList;
-public class ChessBoard {
+public class ChessBoard implements Serializable {
+    static final long serialVersionUID = 42L;
     public final static int column = 4; //列
     public final static int row = 8; //行
     private boolean blackFirst;
@@ -14,7 +16,6 @@ public class ChessBoard {
         blackFirst = false;
         newGame();
     }
-
     private boolean canMoved(String o1, String o2) {
         //如果棋子移動過去是空的或比對方大或一樣大
         if (o2.equals("1") || Rule.compare(o1, o2)) {

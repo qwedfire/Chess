@@ -1,7 +1,21 @@
 import javax.swing.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 public class Resource {
+    public static final MP3Player jjPlayer,loopPlay;
+    static {
+        try {
+//            InputStream in=new FileInputStream("dir/maple.mp3");
+//            loopPlay=new MP3Player(in);
+            loopPlay=new MP3Player(new FileInputStream("dir/maple.mp3"));
+            jjPlayer = new MP3Player(new FileInputStream("dir/ding.mp3"));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static HashMap<String, Icon> pictures = new HashMap<>() {
         {
             put("兵", new ImageIcon("dir/红卒.gif"));

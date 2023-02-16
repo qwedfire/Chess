@@ -16,7 +16,7 @@ public class Reg extends JFrame {
     private final static String SQL_CHECK = "select count(*) count from chessmember where account=? ";
     private final static String SQL_INSERT = "insert into chessmember(account,password,nickname,age)values(?,?,?,?) ";
     private JPasswordField jp;
-    private JTextArea jt;
+    private JTextField jt;
     private JButton jb;
     private JButton jb1;
 
@@ -33,12 +33,12 @@ public class Reg extends JFrame {
         JLabel jl6 = new JLabel("年齡");
         JLabel jl7 = new JLabel();
         JLabel jl8 = new JLabel();
-        JTextArea jt1 = new JTextArea();
-        JTextArea jt2 = new JTextArea();
+        JTextField jt1 = new JTextField();
+        JTextField jt2 = new JTextField();
         jp = new JPasswordField(5);
         jb = new JButton("註冊");
         jb1 = new JButton("已存在用戶");
-        jt = new JTextArea();
+        jt = new JTextField();
         all.setLayout(new GridLayout(6, 1));
         all.add(jl3);
         all.add(jl4);

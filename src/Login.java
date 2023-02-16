@@ -15,7 +15,7 @@ public class Login extends JFrame {
     private final static String SQL_LOGIN = "select * from chessmember where account=? ";
     private Main m;
     private JPasswordField jp;
-    private JTextArea jt;
+    private JTextField jt;
     private JButton jb;
 
     public Login() {
@@ -31,7 +31,7 @@ public class Login extends JFrame {
         JTextArea jt2 = new JTextArea();
         jp = new JPasswordField(5);
         jb = new JButton("登入");
-        jt = new JTextArea();
+        jt = new JTextField();
         all.setLayout(new GridLayout(3, 1));
         all.add(jl3);
         all.add(jl4);
